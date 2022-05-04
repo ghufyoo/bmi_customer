@@ -59,6 +59,7 @@ dependencies:
   audio_service: ^0.18.4
   rxdart: ^0.27.3
   just_audio: ^0.9.20
+  url_launcher: ^6.1.0
 
  
 

@@ -77,12 +77,9 @@ class ReceiptStream extends StatelessWidget {
         if (!snapshot.hasData) {
           return Column(
             children: [
-              const Text('Sila Bayar Di Kaunter'),
-              Text('Tunjukkan Nombor Id Kepada cashier$today'),
-              const Center(
-                child: CircularProgressIndicator(
-                  backgroundColor: Colors.lightBlueAccent,
-                ),
+              Center(
+                child: LoadingAnimationWidget.newtonCradle(
+                    color: Colors.white, size: 70),
               ),
             ],
           );

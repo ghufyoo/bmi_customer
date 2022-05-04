@@ -108,7 +108,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             !_loading
                 ? RoundedButton(
                     title: 'Register',
-                    colour: Colors.lightBlueAccent,
+                    colour: Colors.blue,
                     onPressed: () async {
                       final validUsername = await FirestoreController.instance
                           .usernameCheck(nicknameController.text);

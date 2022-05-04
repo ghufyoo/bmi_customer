@@ -60,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: Colors.black),
             )),
             const SizedBox(
-              height: 48.0,
+              height: 40.0,
             ),
             TextField(
               controller: emailController,
@@ -90,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
             !_loading
                 ? RoundedButton(
                     title: 'Log In',
-                    colour: Colors.lightBlueAccent,
+                    colour: Colors.teal.shade700,
                     onPressed: () {
                       AuthController.instance.login(
                         emailController.text.trim(),

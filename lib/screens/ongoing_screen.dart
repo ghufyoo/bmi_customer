@@ -4,6 +4,7 @@ import 'package:bmi_order/screens/past_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../controller/auth_controller.dart';
 import 'profile_screen.dart';
@@ -97,10 +98,9 @@ class OngoingStream extends StatelessWidget {
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return const Center(
-            child: CircularProgressIndicator(
-              backgroundColor: Colors.lightBlueAccent,
-            ),
+          return Center(
+            child: LoadingAnimationWidget.newtonCradle(
+                color: Colors.black, size: 70),
           );
         }
         final orderss = snapshot.data?.docs;
@@ -117,7 +117,8 @@ class OngoingStream extends StatelessWidget {
           final buzzerNumber = ticket.get('buzzerNumber');
           final menuName = List.from(ticket.get('menuName'));
           final menuPrice = List.from(ticket.get('menuPrice'));
-          final menuTopping = List.from(ticket.get('menuTopping'));
+          final menuToppingName = List.from(ticket.get('menuToppingName'));
+          final menuToppingPrice = List.from(ticket.get('menuToppingPrice'));
           final menuQuantity = List.from(ticket.get('menuQuantity'));
           final totalPrice = ticket.get('totalPrice');
           final totalFoods = ticket.get('totalFoods');
@@ -136,7 +137,8 @@ class OngoingStream extends StatelessWidget {
             receiptId: receiptId,
             receiptUniqueId: receiptUniqueId,
             buzzerNumber: buzzerNumber,
-            menuTopping: menuTopping,
+            menuToppingName: menuToppingName,
+            menuToppingPrice: menuToppingPrice,
             menuName: menuName,
             menuPrice: menuPrice,
             menuQuantity: menuQuantity,
@@ -172,7 +174,8 @@ class OngoingUI extends StatefulWidget {
       required this.receiptUniqueId,
       required this.receiptId,
       required this.buzzerNumber,
-      required this.menuTopping,
+      required this.menuToppingName,
+      required this.menuToppingPrice,
       required this.menuName,
       required this.menuPrice,
       required this.menuQuantity,
@@ -193,7 +196,8 @@ class OngoingUI extends StatefulWidget {
   final num receiptId;
   final num receiptUniqueId;
   final num buzzerNumber;
-  final List<dynamic> menuTopping;
+  final List<dynamic> menuToppingName;
+  final List<dynamic> menuToppingPrice;
   final List<dynamic> menuName;
   final List<dynamic> menuPrice;
   final List<dynamic> menuQuantity;
@@ -214,10 +218,6 @@ class OngoingUI extends StatefulWidget {
 }
 
 class _OngoingUIState extends State<OngoingUI> {
-  format() {
-    if (widget.menuTopping.contains('{}')) {}
-  }
-
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
@@ -322,18 +322,39 @@ class _OngoingUIState extends State<OngoingUI> {
                                   children: [
                                     SizedBox(
                                         width: screenSize.width / 2,
-                                        child: Text('${index + 1}~' +
-                                            widget.menuName[index])),
-                                    widget.menuTopping[index] != "{}"
+                                        child: Text(
+                                          '${index + 1}~' +
+                                              widget.menuName[index],
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        )),
+                                    widget.menuToppingName[index] != ''
                                         ? SizedBox(
-                                            width: screenSize.width / 2,
-                                            child: Text(
-                                              widget.menuTopping[index]
-                                                  .toString(),
-                                              textAlign: TextAlign.start,
-                                            ),
+                                            width: screenSize.width / 3,
+                                            child: ListView.builder(
+                                                shrinkWrap: true,
+                                                itemCount: widget
+                                                    .menuToppingName.length,
+                                                itemBuilder: (context, index) {
+                                                  return SizedBox(
+                                                    width: screenSize.width / 2,
+                                                    child: Text(
+                                                      widget.menuToppingName[
+                                                                  index]
+                                                              .toString() +
+                                                          '(${widget.menuToppingPrice[index]})',
+                                                      textAlign:
+                                                          TextAlign.start,
+                                                      style: const TextStyle(
+                                                          fontStyle:
+                                                              FontStyle.italic,
+                                                          fontSize: 14,
+                                                          color: Colors.black),
+                                                    ),
+                                                  );
+                                                }),
                                           )
-                                       
                                         : const Text('Tiada Topping'),
                                   ],
                                 ),
