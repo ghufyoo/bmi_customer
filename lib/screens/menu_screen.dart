@@ -1,6 +1,5 @@
 import 'package:bmi_order/controller/auth_controller.dart';
 import 'package:bmi_order/screens/cart_screen.dart';
-
 import 'package:bmi_order/screens/ongoing_screen.dart';
 import 'package:bmi_order/screens/past_screen.dart';
 import 'package:bmi_order/screens/profile_screen.dart';
@@ -24,6 +23,7 @@ import 'dart:html' as html;
 FirebaseMessaging messaging = FirebaseMessaging.instance;
 
 class MenuScreen extends StatefulWidget {
+  static const routeName = "/firebase-push";
   static const String id = 'menu_screen';
 
   const MenuScreen({
@@ -36,8 +36,29 @@ class MenuScreen extends StatefulWidget {
 
 class _MenuScreenState extends State<MenuScreen> {
   DateTime now = DateTime.now();
+  String? _token;
+  Stream<String>? _tokenStream;
+  int notificationCount = 0;
+
+  void setToken(String? token) {
+    print('FCM TokenToken: $token');
+    setState(() {
+      _token = token;
+    });
+  }
+
   @override
   void initState() {
+    //getPermission();
+    messageListener(context);
+    //FirebaseMessaging.instance
+    //    .getToken(
+    //         vapidKey:
+    //           "BFIQRP4_twQWdebyljX-7yWrApT65YxohCu7B6I2oN_3WCRiTvy-fnZ-CH1Z6mOF0rtC7uNY12eSMpZ86SWf6oU")
+    //   .then(setToken);
+
+    _tokenStream = FirebaseMessaging.instance.onTokenRefresh;
+    _tokenStream!.listen(setToken);
     super.initState();
   }
 
@@ -81,6 +102,14 @@ class _MenuScreenState extends State<MenuScreen> {
               ),
             ),
           ],
+          toolbarHeight: MediaQuery.of(context).size.height / 8,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(MediaQuery.of(context).size.width / 8),
+              // bottom: Radius.elliptical(
+              //     MediaQuery.of(context).size.width / 2, 50.0),
+            ),
+          ),
         ),
         drawer: Drawer(
           // Add a ListView to the drawer. This ensures the user can scroll
@@ -145,7 +174,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 );
               }
               final isOpen = snapshot.data!;
-
+    
               return isOpen['isOpen']
                   ? Container(child: const MenuStream())
                   : Padding(
@@ -339,6 +368,73 @@ class _MenuScreenState extends State<MenuScreen> {
                       ),
                     );
             }));
+  }
+
+  Future<void> getPermission() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+    if (settings.authorizationStatus.toString() ==
+        'AuthorizationStatus.denied') {
+      print('heyyyy');
+    }
+
+    print('User granted permission: ${settings.authorizationStatus}');
+  }
+
+  void messageListener(BuildContext context) {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Got a message whilst in the foreground!');
+      print('Message data: ${message.data}');
+
+      if (message.notification != null) {
+        print(
+            'Message also contained a notification: ${message.notification!.body}');
+        showDialog(
+            context: context,
+            builder: ((BuildContext context) {
+              return DynamicDialog(
+                  title: message.notification!.title,
+                  body: message.notification!.body);
+            }));
+      }
+    });
+  }
+}
+
+
+//push notification dialog for foreground
+class DynamicDialog extends StatefulWidget {
+  final title;
+  final body;
+  const DynamicDialog({this.title, this.body});
+  @override
+  _DynamicDialogState createState() => _DynamicDialogState();
+}
+
+class _DynamicDialogState extends State<DynamicDialog> {
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(widget.title),
+      actions: <Widget>[
+        OutlinedButton.icon(
+            label: const Text('Close'),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: const Icon(Icons.close))
+      ],
+      content: Text(widget.body),
+    );
   }
 }
 

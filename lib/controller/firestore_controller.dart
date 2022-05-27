@@ -62,9 +62,9 @@ class FirestoreController extends GetxController {
   
 
 // PLACE ORDER
-  Future placeOrder(Orders orders, num uniqueId) async {
+  Future placeOrder(Orders orders, String uniqueId) async {
     final order =
-        firebaseFirestore.collection('newOrder').doc(uniqueId.toString());
+        firebaseFirestore.collection('newOrder').doc(uniqueId);
 
     final json = orders.toJson();
 

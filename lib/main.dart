@@ -40,7 +40,7 @@ class BmiOrder extends StatelessWidget {
         GetPage(name: "/", page: () => const LoginScreen()),
         GetPage(
             name: "/registration_screen",
-            page: () => const RegistrationScreen()),
+            page: () =>  RegistrationScreen()),
         GetPage(name: "/login_screen", page: () => const LoginScreen()),
         GetPage(name: "/menu_screen", page: () => const MenuScreen()),
         GetPage(
@@ -55,8 +55,8 @@ class BmiOrder extends StatelessWidget {
         GetPage(name: "/cart_screen", page: () => const CartScreen()),
         GetPage(
             name: "/receipt_screen",
-            page: () => const ReceiptScreen(
-                  receiptId: 0,
+            page: () => ReceiptScreen(
+                  receiptUniqueId: '',
                 )),
         // GetPage(name: "/menu_screen",page: ()=>MenuScreen(email: ''),
 

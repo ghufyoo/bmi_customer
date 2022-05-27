@@ -486,3 +486,30 @@
                                         //           );
                                         //         }),
                                         //   )
+
+                                           // await _firestore
+                  //     .collection('newOrder')
+                  //     .get()
+                  //     .then((QuerySnapshot querySnapshot) {
+                  //   for (var element in querySnapshot.docs) {
+                  //     while (uniqueId <= element['ticketId']) {
+                  //       uniqueId = uniqueId + 1;
+                  //     }
+                  //   }
+                  // });
+
+                  // print(snapshot.id);
+//               while (id < int.parse(snapshot.id)) {
+//                 print(snapshot.id);
+//                 id = id + 1;
+//                 print(id);
+
+//                 // print(snapshot.id);
+//                 // id = id + 2;
+//                 // print('$id adding');
+//               }
+//               print('$id success');
+//               Get.to(PaymentMethodScreen(
+//                 ticketNumber: id,
+//               ));
+//               print('done');

@@ -35,10 +35,12 @@ class DetailedmenuScreen extends StatefulWidget {
 
 enum Makansini { MinumSini, Bungkus, none }
 enum drinkSize { Small, Medium, Bucket, none }
+enum ramenType { Normal, Cheese, Carbonara, none }
 enum iceLevel { Less, Extra, NoIce, Normal }
 enum sugarLevel { Less, Extra, NoSugar, Normal }
 Makansini? _type = Makansini.none;
 drinkSize? _size = drinkSize.none;
+ramenType? _types = ramenType.none;
 
 late String kMakanSini = 'Makan Sini';
 late String kMinumSini = 'Minum Sini';
@@ -91,6 +93,7 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
   int totalDrinks = 0;
   int totalMamu = 0;
   num fixedPrice = 0;
+
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
@@ -224,6 +227,34 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
 
                   if (_type == Makansini.none) {
                     Get.snackbar('Sila Pilih', 'Makan Sini Atau Bungkus');
+                  } else if (cart.isEmpty) {
+                    completeDish =
+                        widget.chosenMenu + ' ' + chosenSize + ' ' + chosenType;
+                    choseniceLevel =
+                        sliderIce(_currentIceSliderValue, chosenSize);
+                    chosensugarLevel = sliderSugar(_currentSugarSliderValue);
+                    chosenspicyLevel = sliderSpicy(_currentSpicySliderValue);
+                    cart['Biasa'] = 0;
+                    value.add(
+                        widget.imgUrl,
+                        completeDish,
+                        cart,
+                        quantity,
+                        totalPrice,
+                        totalDrinks,
+                        totalMamu,
+                        choseniceLevel,
+                        chosensugarLevel,
+                        chosenspicyLevel,
+                        isDrink);
+                    // Get.to(() => const DetailedScreen(queryString: 'Cendol'));
+                    Get.to(const CartScreen());
+                    isBungkus = false;
+                    _type = Makansini.none;
+                    _size = drinkSize.none;
+                    chosenSize = '';
+                    choseniceLevel = '';
+                    chosensugarLevel = '';
                   } else {
                     completeDish =
                         widget.chosenMenu + ' ' + chosenSize + ' ' + chosenType;
@@ -316,9 +347,15 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
                 child: LoadingAnimationWidget.newtonCradle(
                     color: Colors.white, size: 85),
               );
+            } else if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: LoadingAnimationWidget.newtonCradle(
+                    color: Colors.white, size: 85),
+              );
             }
             final docs = snapshot.data!.docs;
             return ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemCount: docs.length,
                 itemBuilder: (_, i) {
@@ -407,9 +444,15 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
                 child: LoadingAnimationWidget.newtonCradle(
                     color: Colors.white, size: 85),
               );
+            } else if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: LoadingAnimationWidget.newtonCradle(
+                    color: Colors.white, size: 85),
+              );
             }
             final docs = snapshot.data!.docs;
             return ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemCount: docs.length,
                 itemBuilder: (_, i) {
@@ -659,6 +702,7 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
                 }
                 cart.clear();
                 widget.price = 4;
+                isBucket = false;
               });
             },
           ),
@@ -796,155 +840,161 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
             : const SizedBox(
                 height: 1,
               ),
-        Container(
-          child: const Center(
-            child: Text(
-              'Tambah Topping baru mantap!',
-              style: kMenuOptionDetailStyle,
-            ),
-          ),
-          decoration: kContainerHeaderStyle,
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SizedBox(
-            width: screenSize.width,
-            child: streamBuildCheckCendol(isBucket),
-          ),
-        ),
-        Column(
-          children: [
-            Container(
-              child: const Center(
-                child: Text(
-                  'Level Ais',
-                  style: kMenuOptionDetailStyle,
+        _type != Makansini.none
+            ? Container(
+                child: const Center(
+                  child: Text(
+                    'Tambah Topping baru mantap!',
+                    style: kMenuOptionDetailStyle,
+                  ),
                 ),
-              ),
-              decoration: kContainerHeaderStyle,
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text(
-                  'Tak Nak Ais',
-                  style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Colors.white),
+                decoration: kContainerHeaderStyle,
+              )
+            : const SizedBox(),
+        _type != Makansini.none
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  width: screenSize.width,
+                  child: streamBuildCheckCendol(isBucket),
                 ),
-                Text(
-                  'Kurang Ais',
-                  style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Colors.white),
-                ),
-                Text(
-                  'Normal',
-                  style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Colors.white),
-                ),
-                Text(
-                  'Extra Ais',
-                  style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Colors.white),
-                ),
-              ],
-            ),
-            Slider(
-              autofocus: true,
-              activeColor: Colors.blueAccent,
-              inactiveColor: Colors.teal[700],
-              thumbColor: Colors.white,
-              value: _currentIceSliderValue,
-              max: 75,
-              divisions: 3,
-              label: sliderIce(_currentIceSliderValue, chosenSize),
-              onChanged: (double value) {
-                setState(() {
-                  _currentIceSliderValue = value;
-                  iceSliderPrice(_currentIceSliderValue, chosenSize);
-                });
-              },
-            ),
-            Container(
-              child: const Center(
-                child: Text(
-                  'Level Gula',
-                  style: kMenuOptionDetailStyle,
-                ),
-              ),
-              decoration: kContainerHeaderStyle,
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text(
-                  'Tak Nak Gula',
-                  style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Colors.white),
-                ),
-                Text(
-                  'Kurang Gula',
-                  style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Colors.white),
-                ),
-                Text(
-                  'Normal',
-                  style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Colors.white),
-                ),
-                Text(
-                  'Extra Gula',
-                  style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Colors.white),
-                ),
-              ],
-            ),
-            Slider(
-              autofocus: true,
-              activeColor: Colors.black,
-              inactiveColor: Colors.teal[700],
-              thumbColor: Colors.white,
-              value: _currentSugarSliderValue,
-              max: 75,
-              divisions: 3,
-              label: sliderSugar(_currentSugarSliderValue),
-              onChanged: (double value) {
-                setState(() {
-                  _currentSugarSliderValue = value;
-                });
-              },
-            )
-          ],
-        )
+              )
+            : const SizedBox(),
+        _type != Makansini.none
+            ? Column(
+                children: [
+                  Container(
+                    child: const Center(
+                      child: Text(
+                        'Level Ais',
+                        style: kMenuOptionDetailStyle,
+                      ),
+                    ),
+                    decoration: kContainerHeaderStyle,
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Text(
+                        'Tak Nak Ais',
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.white),
+                      ),
+                      Text(
+                        'Kurang Ais',
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.white),
+                      ),
+                      Text(
+                        'Normal',
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.white),
+                      ),
+                      Text(
+                        'Extra Ais',
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  Slider(
+                    autofocus: true,
+                    activeColor: Colors.blueAccent,
+                    inactiveColor: Colors.teal[700],
+                    thumbColor: Colors.white,
+                    value: _currentIceSliderValue,
+                    max: 75,
+                    divisions: 3,
+                    label: sliderIce(_currentIceSliderValue, chosenSize),
+                    onChanged: (double value) {
+                      setState(() {
+                        _currentIceSliderValue = value;
+                        iceSliderPrice(_currentIceSliderValue, chosenSize);
+                      });
+                    },
+                  ),
+                  Container(
+                    child: const Center(
+                      child: Text(
+                        'Level Gula',
+                        style: kMenuOptionDetailStyle,
+                      ),
+                    ),
+                    decoration: kContainerHeaderStyle,
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Text(
+                        'Tak Nak Gula',
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.white),
+                      ),
+                      Text(
+                        'Kurang Gula',
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.white),
+                      ),
+                      Text(
+                        'Normal',
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.white),
+                      ),
+                      Text(
+                        'Extra Gula',
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  Slider(
+                    autofocus: true,
+                    activeColor: Colors.black,
+                    inactiveColor: Colors.teal[700],
+                    thumbColor: Colors.white,
+                    value: _currentSugarSliderValue,
+                    max: 75,
+                    divisions: 3,
+                    label: sliderSugar(_currentSugarSliderValue),
+                    onChanged: (double value) {
+                      setState(() {
+                        _currentSugarSliderValue = value;
+                      });
+                    },
+                  )
+                ],
+              )
+            : const SizedBox()
       ],
     );
   }
@@ -1013,6 +1063,7 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
                 }
                 cart.clear();
                 widget.price = 4;
+                isBucket = false;
               });
             },
           ),
@@ -1031,6 +1082,7 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
               isBungkus = true;
               chosenType = 'Bungkus';
               chosenSize = 'Small';
+              _size = drinkSize.Small;
               setState(() {
                 _type = value;
                 _currentIceSliderValue = 50;
@@ -1130,22 +1182,26 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
             : const SizedBox(
                 height: 1,
               ),
-        Container(
-          child: const Center(
-            child: Text(
-              'Tambah Topping baru mantap!',
-              style: kMenuOptionDetailStyle,
-            ),
-          ),
-          decoration: kContainerHeaderStyle,
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SizedBox(
-            width: screenSize.width,
-            child: streamBuildCheckCendol(isBucket),
-          ),
-        ),
+        _type != Makansini.none
+            ? Container(
+                child: const Center(
+                  child: Text(
+                    'Tambah Topping baru mantap!',
+                    style: kMenuOptionDetailStyle,
+                  ),
+                ),
+                decoration: kContainerHeaderStyle,
+              )
+            : const SizedBox(),
+        _type != Makansini.none
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  width: screenSize.width,
+                  child: streamBuildCheckCendol(isBucket),
+                ),
+              )
+            : const SizedBox(),
         // SizedBox(
         //   height: screenSize.height / 2,
         //   width: screenSize.width,
@@ -1156,139 +1212,141 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
         //     ],
         //   ),
         // ),
-        Column(
-          children: [
-            Container(
-              child: const Center(
-                child: Text(
-                  'Level Ais',
-                  style: kMenuOptionDetailStyle,
-                ),
-              ),
-              decoration: kContainerHeaderStyle,
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text(
-                  'Tak Nak Ais',
-                  style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Colors.white),
-                ),
-                Text(
-                  'Kurang Ais',
-                  style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Colors.white),
-                ),
-                Text(
-                  'Normal',
-                  style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Colors.white),
-                ),
-                Text(
-                  'Extra Ais',
-                  style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Colors.white),
-                ),
-              ],
-            ),
-            Slider(
-              autofocus: true,
-              activeColor: Colors.blueAccent,
-              inactiveColor: Colors.teal[700],
-              thumbColor: Colors.white,
-              value: _currentIceSliderValue,
-              max: 75,
-              divisions: 3,
-              label: sliderIce(_currentIceSliderValue, chosenSize),
-              onChanged: (double value) {
-                setState(() {
-                  _currentIceSliderValue = value;
-                  iceSliderPrice(_currentIceSliderValue, chosenSize);
-                });
-              },
-            ),
-            Container(
-              child: const Center(
-                child: Text(
-                  'Level Gula',
-                  style: kMenuOptionDetailStyle,
-                ),
-              ),
-              decoration: kContainerHeaderStyle,
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text(
-                  'Tak Nak Gula',
-                  style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Colors.white),
-                ),
-                Text(
-                  'Kurang Gula',
-                  style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Colors.white),
-                ),
-                Text(
-                  'Normal',
-                  style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Colors.white),
-                ),
-                Text(
-                  'Extra Gula',
-                  style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Colors.white),
-                ),
-              ],
-            ),
-            Slider(
-              autofocus: true,
-              activeColor: Colors.pinkAccent,
-              inactiveColor: Colors.teal[700],
-              thumbColor: Colors.white,
-              value: _currentSugarSliderValue,
-              max: 75,
-              divisions: 3,
-              label: sliderSugar(_currentSugarSliderValue),
-              onChanged: (double value) {
-                setState(() {
-                  _currentSugarSliderValue = value;
-                });
-              },
-            )
-          ],
-        )
+        _type != Makansini.none
+            ? Column(
+                children: [
+                  Container(
+                    child: const Center(
+                      child: Text(
+                        'Level Ais',
+                        style: kMenuOptionDetailStyle,
+                      ),
+                    ),
+                    decoration: kContainerHeaderStyle,
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Text(
+                        'Tak Nak Ais',
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.white),
+                      ),
+                      Text(
+                        'Kurang Ais',
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.white),
+                      ),
+                      Text(
+                        'Normal',
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.white),
+                      ),
+                      Text(
+                        'Extra Ais',
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  Slider(
+                    autofocus: true,
+                    activeColor: Colors.blueAccent,
+                    inactiveColor: Colors.teal[700],
+                    thumbColor: Colors.white,
+                    value: _currentIceSliderValue,
+                    max: 75,
+                    divisions: 3,
+                    label: sliderIce(_currentIceSliderValue, chosenSize),
+                    onChanged: (double value) {
+                      setState(() {
+                        _currentIceSliderValue = value;
+                        iceSliderPrice(_currentIceSliderValue, chosenSize);
+                      });
+                    },
+                  ),
+                  Container(
+                    child: const Center(
+                      child: Text(
+                        'Level Gula',
+                        style: kMenuOptionDetailStyle,
+                      ),
+                    ),
+                    decoration: kContainerHeaderStyle,
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Text(
+                        'Tak Nak Gula',
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.white),
+                      ),
+                      Text(
+                        'Kurang Gula',
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.white),
+                      ),
+                      Text(
+                        'Normal',
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.white),
+                      ),
+                      Text(
+                        'Extra Gula',
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  Slider(
+                    autofocus: true,
+                    activeColor: Colors.pinkAccent,
+                    inactiveColor: Colors.teal[700],
+                    thumbColor: Colors.white,
+                    value: _currentSugarSliderValue,
+                    max: 75,
+                    divisions: 3,
+                    label: sliderSugar(_currentSugarSliderValue),
+                    onChanged: (double value) {
+                      setState(() {
+                        _currentSugarSliderValue = value;
+                      });
+                    },
+                  )
+                ],
+              )
+            : const SizedBox()
       ],
     );
   }
@@ -1348,9 +1406,13 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
 
               chosenType = kMinumSini;
               chosenSize = 'Small';
+              _size = drinkSize.Small;
               setState(() {
-                chosenSize = 'Small';
-                _size = drinkSize.Small;
+                for (int i = 0; i < name.length; i++) {
+                  name[i] = false;
+                }
+                cart.clear();
+                widget.price = 1;
                 _type = value;
               });
             },
@@ -1370,108 +1432,121 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
               isBungkus = true;
               chosenType = 'Bungkus';
               chosenSize = 'Small';
+              _size = drinkSize.Small;
               setState(() {
+                for (int i = 0; i < name.length; i++) {
+                  name[i] = false;
+                }
+                cart.clear();
+                widget.price = 1;
                 _type = value;
               });
             },
           ),
         ),
-        Column(
-          children: [
-            Container(
-              child: const Center(
-                child: Text(
-                  'Pilih Saiz dulu..',
-                  style: kMenuOptionDetailStyle,
-                ),
-              ),
-              decoration: kContainerHeaderStyle,
-            ),
-            ListTile(
-              title: const Text(
-                'Small',
-                style: kDetailMenuTextStyle,
-              ),
-              trailing: Radio<drinkSize>(
-                fillColor:
-                    MaterialStateColor.resolveWith((states) => Colors.white),
-                activeColor: Colors.teal,
-                value: drinkSize.Small,
-                groupValue: _size,
-                onChanged: (drinkSize? value) {
-                  widget.price = 1;
+        _type != Makansini.none
+            ? Column(
+                children: [
+                  Container(
+                    child: const Center(
+                      child: Text(
+                        'Pilih Saiz dulu..',
+                        style: kMenuOptionDetailStyle,
+                      ),
+                    ),
+                    decoration: kContainerHeaderStyle,
+                  ),
+                  ListTile(
+                    title: const Text(
+                      'Small',
+                      style: kDetailMenuTextStyle,
+                    ),
+                    trailing: Radio<drinkSize>(
+                      fillColor: MaterialStateColor.resolveWith(
+                          (states) => Colors.white),
+                      activeColor: Colors.teal,
+                      value: drinkSize.Small,
+                      groupValue: _size,
+                      onChanged: (drinkSize? value) {
+                        widget.price = 1;
 
-                  setState(() {
-                    chosenSize = 'Small';
-                    isBucket = false;
-                    cart.clear();
-                    _size = value;
-                  });
-                },
-              ),
-            ),
-            ListTile(
-              title: const Text(
-                'Medium',
-                style: kDetailMenuTextStyle,
-              ),
-              trailing: Radio<drinkSize>(
-                fillColor:
-                    MaterialStateColor.resolveWith((states) => Colors.white),
-                activeColor: Colors.teal,
-                value: drinkSize.Medium,
-                groupValue: _size,
-                onChanged: (drinkSize? value) {
-                  setState(() {
-                    isBucket = false;
-                    chosenSize = 'Medium';
-                    cart.clear();
-                    widget.price = 2;
-                    _size = value;
-                  });
-                },
-              ),
-            ),
-            ListTile(
-              title: const Text(
-                'Bucket',
-                style: kDetailMenuTextStyle,
-              ),
-              trailing: Radio<drinkSize>(
-                fillColor:
-                    MaterialStateColor.resolveWith((states) => Colors.white),
-                activeColor: Colors.teal,
-                value: drinkSize.Bucket,
-                groupValue: _size,
-                onChanged: (drinkSize? value) {
-                  chosenSize = 'Bucket';
-                  setState(() {
-                    isBucket = true;
-                    cart.clear();
-                    widget.price = 5;
-                    _size = value;
-                  });
-                },
-              ),
-            ),
-          ],
-        ),
-        Container(
-          child: const Center(
-            child: Text(
-              'Tambah Topping baru mantap!',
-              style: kMenuOptionDetailStyle,
-            ),
-          ),
-          decoration: kContainerHeaderStyle,
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SizedBox(
-            width: screenSize.width,
-            child: streamBuildCheckCendol(isBucket),
-          ),
-        ),
+                        setState(() {
+                          chosenSize = 'Small';
+                          isBucket = false;
+                          cart.clear();
+                          _size = value;
+                        });
+                      },
+                    ),
+                  ),
+                  ListTile(
+                    title: const Text(
+                      'Medium',
+                      style: kDetailMenuTextStyle,
+                    ),
+                    trailing: Radio<drinkSize>(
+                      fillColor: MaterialStateColor.resolveWith(
+                          (states) => Colors.white),
+                      activeColor: Colors.teal,
+                      value: drinkSize.Medium,
+                      groupValue: _size,
+                      onChanged: (drinkSize? value) {
+                        setState(() {
+                          isBucket = false;
+                          chosenSize = 'Medium';
+                          cart.clear();
+                          widget.price = 2;
+                          _size = value;
+                        });
+                      },
+                    ),
+                  ),
+                  ListTile(
+                    title: const Text(
+                      'Bucket',
+                      style: kDetailMenuTextStyle,
+                    ),
+                    trailing: Radio<drinkSize>(
+                      fillColor: MaterialStateColor.resolveWith(
+                          (states) => Colors.white),
+                      activeColor: Colors.teal,
+                      value: drinkSize.Bucket,
+                      groupValue: _size,
+                      onChanged: (drinkSize? value) {
+                        chosenSize = 'Bucket';
+
+                        setState(() {
+                          isBucket = true;
+                          cart.clear();
+                          widget.price = 5;
+                          _size = value;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              )
+            : const SizedBox(),
+        _type != Makansini.none
+            ? Container(
+                child: const Center(
+                  child: Text(
+                    'Tambah Topping baru mantap!',
+                    style: kMenuOptionDetailStyle,
+                  ),
+                ),
+                decoration: kContainerHeaderStyle,
+              )
+            : const SizedBox(),
+        _type != Makansini.none
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  width: screenSize.width,
+                  child: streamBuildCheckCendol(isBucket),
+                ),
+              )
+            : const SizedBox(),
       ],
     );
   }
@@ -1559,102 +1634,108 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
             },
           ),
         ),
-        Column(
-          children: [
-            Container(
-              child: const Center(
-                child: Text(
-                  'Pilih Saiz dulu..',
-                  style: kMenuOptionDetailStyle,
-                ),
-              ),
-              decoration: kContainerHeaderStyle,
-            ),
-            ListTile(
-              title: const Text(
-                'Small',
-                style: kDetailMenuTextStyle,
-              ),
-              trailing: Radio<drinkSize>(
-                fillColor:
-                    MaterialStateColor.resolveWith((states) => Colors.white),
-                activeColor: Colors.teal,
-                value: drinkSize.Small,
-                groupValue: _size,
-                onChanged: (drinkSize? value) {
-                  widget.price = 2;
+        _type != Makansini.none
+            ? Column(
+                children: [
+                  Container(
+                    child: const Center(
+                      child: Text(
+                        'Pilih Saiz dulu..',
+                        style: kMenuOptionDetailStyle,
+                      ),
+                    ),
+                    decoration: kContainerHeaderStyle,
+                  ),
+                  ListTile(
+                    title: const Text(
+                      'Small',
+                      style: kDetailMenuTextStyle,
+                    ),
+                    trailing: Radio<drinkSize>(
+                      fillColor: MaterialStateColor.resolveWith(
+                          (states) => Colors.white),
+                      activeColor: Colors.teal,
+                      value: drinkSize.Small,
+                      groupValue: _size,
+                      onChanged: (drinkSize? value) {
+                        widget.price = 2;
 
-                  setState(() {
-                    chosenSize = 'Small';
-                    isBucket = false;
-                    cart.clear();
-                    _size = value;
-                  });
-                },
-              ),
-            ),
-            ListTile(
-              title: const Text(
-                'Medium',
-                style: kDetailMenuTextStyle,
-              ),
-              trailing: Radio<drinkSize>(
-                fillColor:
-                    MaterialStateColor.resolveWith((states) => Colors.white),
-                activeColor: Colors.teal,
-                value: drinkSize.Medium,
-                groupValue: _size,
-                onChanged: (drinkSize? value) {
-                  setState(() {
-                    isBucket = false;
-                    chosenSize = 'Medium';
-                    cart.clear();
-                    widget.price = 4;
-                    _size = value;
-                  });
-                },
-              ),
-            ),
-            ListTile(
-              title: const Text(
-                'Bucket',
-                style: kDetailMenuTextStyle,
-              ),
-              trailing: Radio<drinkSize>(
-                fillColor:
-                    MaterialStateColor.resolveWith((states) => Colors.white),
-                activeColor: Colors.teal,
-                value: drinkSize.Bucket,
-                groupValue: _size,
-                onChanged: (drinkSize? value) {
-                  chosenSize = 'Bucket';
-                  setState(() {
-                    isBucket = true;
-                    cart.clear();
-                    widget.price = 9;
-                    _size = value;
-                  });
-                },
-              ),
-            ),
-          ],
-        ),
-        Container(
-          child: const Center(
-            child: Text(
-              'Tambah Topping baru mantap!',
-              style: kMenuOptionDetailStyle,
-            ),
-          ),
-          decoration: kContainerHeaderStyle,
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SizedBox(
-            width: screenSize.width,
-            child: streamBuildCheckCendol(isBucket),
-          ),
-        ),
+                        setState(() {
+                          chosenSize = 'Small';
+                          isBucket = false;
+                          cart.clear();
+                          _size = value;
+                        });
+                      },
+                    ),
+                  ),
+                  ListTile(
+                    title: const Text(
+                      'Medium',
+                      style: kDetailMenuTextStyle,
+                    ),
+                    trailing: Radio<drinkSize>(
+                      fillColor: MaterialStateColor.resolveWith(
+                          (states) => Colors.white),
+                      activeColor: Colors.teal,
+                      value: drinkSize.Medium,
+                      groupValue: _size,
+                      onChanged: (drinkSize? value) {
+                        setState(() {
+                          isBucket = false;
+                          chosenSize = 'Medium';
+                          cart.clear();
+                          widget.price = 4;
+                          _size = value;
+                        });
+                      },
+                    ),
+                  ),
+                  ListTile(
+                    title: const Text(
+                      'Bucket',
+                      style: kDetailMenuTextStyle,
+                    ),
+                    trailing: Radio<drinkSize>(
+                      fillColor: MaterialStateColor.resolveWith(
+                          (states) => Colors.white),
+                      activeColor: Colors.teal,
+                      value: drinkSize.Bucket,
+                      groupValue: _size,
+                      onChanged: (drinkSize? value) {
+                        chosenSize = 'Bucket';
+                        setState(() {
+                          isBucket = true;
+                          cart.clear();
+                          widget.price = 9;
+                          _size = value;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              )
+            : const SizedBox(),
+        _type != Makansini.none
+            ? Container(
+                child: const Center(
+                  child: Text(
+                    'Tambah Topping baru mantap!',
+                    style: kMenuOptionDetailStyle,
+                  ),
+                ),
+                decoration: kContainerHeaderStyle,
+              )
+            : const SizedBox(),
+        _type != Makansini.none
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  width: screenSize.width,
+                  child: streamBuildCheckCendol(isBucket),
+                ),
+              )
+            : const SizedBox(),
       ],
     );
   }
@@ -1825,7 +1906,7 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
               },
             ),
           ],
-        )
+        ),
       ],
     );
   }
@@ -2015,6 +2096,82 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
               });
             },
           ),
+        ),
+        Column(
+          children: [
+            Container(
+              child: const Center(
+                child: Text(
+                  'Yang Mana Satu',
+                  style: kMenuOptionDetailStyle,
+                ),
+              ),
+              decoration: kContainerHeaderStyle,
+            ),
+            ListTile(
+              title: const Text(
+                'Normal',
+                style: kDetailMenuTextStyle,
+              ),
+              trailing: Radio<ramenType>(
+                fillColor:
+                    MaterialStateColor.resolveWith((states) => Colors.white),
+                activeColor: Colors.teal,
+                value: ramenType.Normal,
+                groupValue: _types,
+                onChanged: (ramenType? value) {
+                  setState(() {
+                    chosenSize = 'Normal';
+                    cart.clear();
+                    _types = value;
+                  });
+                },
+              ),
+            ),
+            ListTile(
+              title: const Text(
+                'Cheese',
+                style: kDetailMenuTextStyle,
+              ),
+              trailing: Radio<ramenType>(
+                fillColor:
+                    MaterialStateColor.resolveWith((states) => Colors.white),
+                activeColor: Colors.teal,
+                value: ramenType.Cheese,
+                groupValue: _types,
+                onChanged: (ramenType? value) {
+                  setState(() {
+                    chosenSize = 'Cheese';
+                    cart.clear();
+
+                    _types = value;
+                  });
+                },
+              ),
+            ),
+            ListTile(
+              title: const Text(
+                'Carbonara',
+                style: kDetailMenuTextStyle,
+              ),
+              trailing: Radio<ramenType>(
+                fillColor:
+                    MaterialStateColor.resolveWith((states) => Colors.white),
+                activeColor: Colors.teal,
+                value: ramenType.Carbonara,
+                groupValue: _types,
+                onChanged: (ramenType? value) {
+                  setState(() {
+                    chosenSize = 'Carbonara';
+
+                    cart.clear();
+
+                    _types = value;
+                  });
+                },
+              ),
+            ),
+          ],
         ),
         Container(
           child: const Center(

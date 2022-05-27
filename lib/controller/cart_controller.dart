@@ -102,11 +102,8 @@ class AddToCartVM extends GetxController {
     for (var i = 0; i < lst.length; i++) {
       totalM = lst[i].totalMamu;
       quantity = lst[i].menuQuantity;
-      if (totalM == 0) {
-        total = 0;
-      } else {
-        total = total + totalM * quantity;
-      }
+
+      total = total + totalM * quantity;
     }
 
     return total;
@@ -126,13 +123,21 @@ class AddToCartVM extends GetxController {
   }
 
   toFire() {}
-
+  // List<String> arr = [];
+  // List<String> arr2 = [];
   toName() {
     List<String> arr = [];
     for (var item in lst) {
       arr.add(item.menuName);
     }
     return arr;
+  }
+
+  toNameTop() {
+    List<Map<String, String>> arr = [];
+    for (var item in lst) {
+      // arr.add(item.menuName);
+    }
   }
 
   toisDrink() {
@@ -167,17 +172,25 @@ class AddToCartVM extends GetxController {
     return arr;
   }
 
-  toTopping() {
-    List<Map<String, num>> arr = [];
+//  AutoSizeText(
+//  '~${value.lst[index].menuTopping.keys.elementAt(indexx)}',
+  toTopping(List<String> aa, List<num> b) {
+    List<String> a = [];
 
     // lst.map((e) => e.menuTopping.forEach((key, value) {
     //       arr.add(key);
     //     }));
-    for (var item in lst) {
-      // arr.add(item.menuTopping.keys.toString().removeAllWhitespace);
-      arr.add(item.menuTopping);
+    for (int index = 0; index < lst.length; index++) {
+      for (int i = 0; i < lst[index].menuTopping.length; i++) {
+        print(lst[index].menuTopping.keys.elementAt(i));
+        a.add(lst[index].menuTopping.keys.elementAt(i));
+      }
     }
-    return arr;
+    // arr.add(item.menuTopping.keys.toString().removeAllWhitespace);
+
+    // a.add({aa: b});
+
+    return a;
   }
 
   toToppingName() {

@@ -60,6 +60,7 @@ dependencies:
   rxdart: ^0.27.3
   just_audio: ^0.9.20
   url_launcher: ^6.1.0
+  web_browser_detect: ^2.0.2
 
  
 

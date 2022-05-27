@@ -4,63 +4,50 @@ import 'package:bmi_order/screens/ongoing_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:bmi_order/screens/menu_screen.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../controller/auth_controller.dart';
 import '../components/roundedbutton.dart';
 // ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
 
-num recId = 0;
+String recId = '';
 
 class ReceiptScreen extends StatefulWidget {
   static const String id = 'receipt_screen';
-  const ReceiptScreen({Key? key, required this.receiptId}) : super(key: key);
-  final num receiptId;
+  const ReceiptScreen({Key? key, required this.receiptUniqueId})
+      : super(key: key);
+  final String receiptUniqueId;
   @override
   _ReceiptScreenState createState() => _ReceiptScreenState();
 }
 
+late ScrollController _scrollController;
+
 class _ReceiptScreenState extends State<ReceiptScreen> {
   @override
+  void initState() {
+    // TODO: implement initState
+    _scrollController = ScrollController();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // final controller = Get.put(AddToCartVM());
-    setState(() {
-      html.window.onBeforeUnload.listen((event) async {
-        firebaseFirestore
-            .collection('newOrder')
-            .where('userEmail',
-                isEqualTo:
-                    AuthController().auth.currentUser?.email.toString()) //
-            .where('receiptId', isEqualTo: widget.receiptId)
-            .get()
-            .then((value) {
-          for (var element in value.docs) {
-            firebaseFirestore
-                .collection('newOrder')
-                .doc(element.id)
-                .delete()
-                .then((value) {
-              Get.snackbar(
-                  'Order Failed', 'You have failed to make the Payment');
-              Get.offAll(const MenuScreen());
-            });
-          }
-        });
-      });
-    });
     return Scaffold(
         backgroundColor: Colors.teal[900],
         body: ReceiptStream(
-          receiptId: widget.receiptId,
+          receiptId: widget.receiptUniqueId,
         ));
+  }
+
+  dialog() {
+    Get.defaultDialog(title: 'allow');
   }
 }
 
 class ReceiptStream extends StatelessWidget {
   const ReceiptStream({Key? key, required this.receiptId}) : super(key: key);
-  final num receiptId;
+  final String receiptId;
   @override
   Widget build(BuildContext context) {
     recId = receiptId;
@@ -96,11 +83,7 @@ class ReceiptStream extends StatelessWidget {
           final receiptId = ticket.get('receiptId');
           final receiptUniqueId = ticket.get('ticketId');
           final buzzerNumber = ticket.get('buzzerNumber');
-          final menuName = List.from(ticket.get('menuName'));
-          final menuPrice = List.from(ticket.get('menuPrice'));
-          final menuToppingName = List.from(ticket.get('menuToppingName'));
-          final menuToppingPrice = List.from(ticket.get('menuToppingPrice'));
-          final menuQuantity = List.from(ticket.get('menuQuantity'));
+          final order = ticket.get('order');
           final totalPrice = ticket.get('totalPrice');
           final totalFoods = ticket.get('totalFoods');
           final totalDrinks = ticket.get('totalDrinks');
@@ -115,14 +98,10 @@ class ReceiptStream extends StatelessWidget {
             customerPhonenumber: customerPhonenumber,
             receiptTime: receiptTime,
             receiptDate: receiptDate,
-            buzzerNumber: buzzerNumber,
             receiptId: receiptId,
             receiptUniqueId: receiptUniqueId,
-            menuToppingName: menuToppingName,
-            menuToppingPrice: menuToppingPrice,
-            menuName: menuName,
-            menuPrice: menuPrice,
-            menuQuantity: menuQuantity,
+            buzzerNumber: buzzerNumber,
+            order: order,
             totalDrinks: totalDrinks,
             totalFoods: totalFoods,
             totalPrice: totalPrice,
@@ -157,11 +136,7 @@ class ReceiptUI extends StatefulWidget {
       required this.receiptUniqueId,
       required this.receiptId,
       required this.buzzerNumber,
-      required this.menuToppingName,
-      required this.menuToppingPrice,
-      required this.menuName,
-      required this.menuPrice,
-      required this.menuQuantity,
+      required this.order,
       required this.totalDrinks,
       required this.totalFoods,
       required this.totalPrice,
@@ -177,20 +152,12 @@ class ReceiptUI extends StatefulWidget {
   final String receiptTime;
   final String receiptDate;
   final num receiptId;
-  final num receiptUniqueId;
+  final String receiptUniqueId;
   final num buzzerNumber;
-  final List<dynamic> menuToppingName;
-  final List<dynamic> menuToppingPrice;
-  final List<dynamic> menuName;
-  final List<dynamic> menuPrice;
-  final List<dynamic> menuQuantity;
+  final Map<String, dynamic> order;
   final num totalDrinks;
   final num totalFoods;
   final num totalPrice;
-  // final List<dynamic> price;
-  // final List<dynamic> quantity;
-  // final List<dynamic> dishName;
-  // final List<dynamic> dishTopping;
 
   bool isPaid;
   bool isPickup;
@@ -221,6 +188,15 @@ class _ReceiptUIState extends State<ReceiptUI> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Image.asset('images/web-logo.png'),
+                      const Center(
+                        child: Text(
+                          'Tekan Untuk Kembali',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: Colors.white),
+                        ),
+                      ),
                       const Center(
                         child: Text('Cendol BMI E-Receipt',
                             style: TextStyle(
@@ -323,8 +299,21 @@ class _ReceiptUIState extends State<ReceiptUI> {
                             width: screenSize.width * 0.95,
                             child: ListView.builder(
                                 shrinkWrap: true,
-                                itemCount: widget.menuName.length,
+                                itemCount: widget.order.length,
                                 itemBuilder: (context, index) {
+                                  Map<String, dynamic> data =
+                                      <String, dynamic>{};
+
+                                  for (dynamic type in widget.order.keys) {
+                                    data[type.toString()] = widget.order[type];
+                                  }
+
+                                  List<dynamic> l =
+                                      data[index.toString()]['toppingName'];
+                                  print('index' +
+                                      index.toString() +
+                                      '------' +
+                                      l.toString());
                                   return Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -337,53 +326,46 @@ class _ReceiptUIState extends State<ReceiptUI> {
                                               width: screenSize.width / 2,
                                               child: Text(
                                                 '${index + 1}~' +
-                                                    widget.menuName[index],
+                                                    data[index.toString()]
+                                                        ['name'],
                                                 style: const TextStyle(
                                                     fontFamily: 'Roboto',
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 15,
                                                     color: Colors.white),
                                               )),
-                                          widget.menuToppingName[index] != ''
-                                              ? SizedBox(
-                                                  width: screenSize.width / 3,
-                                                  child: ListView.builder(
-                                                      shrinkWrap: true,
-                                                      itemCount: widget
-                                                          .menuToppingName
-                                                          .length,
-                                                      itemBuilder:
-                                                          (context, index) {
-                                                        return SizedBox(
-                                                          width:
-                                                              screenSize.width /
-                                                                  2,
-                                                          child: Text(
-                                                            widget.menuToppingName[
-                                                                        index]
-                                                                    .toString() +
-                                                                '(${widget.menuToppingPrice[index]})',
-                                                            textAlign:
-                                                                TextAlign.start,
-                                                            style: const TextStyle(
-                                                                fontStyle:
-                                                                    FontStyle
-                                                                        .italic,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize: 14,
-                                                                color: Colors
-                                                                    .white),
-                                                          ),
-                                                        );
-                                                      }),
-                                                )
-                                              : const Text('Tiada Topping'),
+                                          SizedBox(
+                                            width: screenSize.width / 3,
+                                            child: ListView.builder(
+                                                shrinkWrap: true,
+                                                itemCount: l.length,
+                                                itemBuilder: (context, indexx) {
+                                                  return SizedBox(
+                                                    width: screenSize.width / 2,
+                                                    child: Text(
+                                                      data[index.toString()][
+                                                                      'toppingName']
+                                                                  [indexx]
+                                                              .toString() +
+                                                          '(${data[index.toString()]['toppingPrice'][indexx].toString()})',
+                                                      textAlign:
+                                                          TextAlign.start,
+                                                      style: const TextStyle(
+                                                          fontStyle:
+                                                              FontStyle.italic,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 14,
+                                                          color: Colors.white),
+                                                    ),
+                                                  );
+                                                }),
+                                          ),
                                         ],
                                       ),
                                       Text(
-                                        '${widget.menuQuantity[index]}',
+                                        data[index.toString()]['quantity']
+                                            .toString(),
                                         style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 15,
@@ -393,7 +375,8 @@ class _ReceiptUIState extends State<ReceiptUI> {
                                         padding:
                                             const EdgeInsets.only(right: 8.0),
                                         child: Text(
-                                          '${widget.menuPrice[index]}',
+                                          data[index.toString()]['totalPrice']
+                                              .toString(),
                                           style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 15,
@@ -409,6 +392,9 @@ class _ReceiptUIState extends State<ReceiptUI> {
                             width: screenSize.width * 0.95,
                             color: Colors.black,
                           ),
+                          const SizedBox(
+                            height: 15,
+                          ),
                           Center(
                             child: Text(
                               'Jumlah RM${widget.totalPrice}',
@@ -422,6 +408,7 @@ class _ReceiptUIState extends State<ReceiptUI> {
                           const Center(
                             child: Text(
                               'Kalau Sedap Bagitahu Kawan, Tidak Sedap Bagitahu Kami',
+                              textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontFamily: 'Roboto',
                                   fontStyle: FontStyle.italic,
@@ -480,118 +467,282 @@ class _ReceiptUIState extends State<ReceiptUI> {
                   )),
             )
           : Center(
-              child: Column(
-                children: [
-                  Center(
-                    child: Image.asset('images/web-logo.png'),
-                  ),
-                  LoadingAnimationWidget.newtonCradle(
-                      color: Colors.white, size: 90),
-                  const Center(
-                    child: Text(
-                      'Sila Bayar Di Kaunter',
-                      style: TextStyle(
-                          fontFamily: 'Roboto',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 25,
-                          color: Colors.white),
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(17),
+                    color: Colors.teal.shade900,
+                    border: Border.all(width: 5.0, color: Colors.white)),
+                child: Column(
+                  children: [
+                    Center(
+                      child: Image.asset(
+                        'images/web-logo.png',
+                        width: 200,
+                      ),
                     ),
-                  ),
-                  const Center(
-                    child: Text(
-                      'Tunjukkan Nombor Ini',
-                      style: TextStyle(
-                          fontFamily: 'Roboto',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 25,
-                          color: Colors.white),
+                    Container(
+                      padding: const EdgeInsets.only(left: 10, right: 10),
+                      decoration: BoxDecoration(
+                        image: const DecorationImage(
+                            fit: BoxFit.fill,
+                            image: AssetImage("images/decoimgfluttertest.png")),
+                        borderRadius: BorderRadius.circular(17),
+                      ),
+                      width: screenSize.width * 0.95,
+                      height: screenSize.height / 2.5,
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              SizedBox(
+                                width: screenSize.width / 2,
+                                child: const Text(
+                                  'Menu',
+                                  style: TextStyle(
+                                      fontFamily: 'Roboto',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                      color: Colors.black),
+                                ),
+                              ),
+                              const Spacer(),
+                              const Text(
+                                'Quantity',
+                                style: TextStyle(
+                                    fontFamily: 'Roboto',
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color: Colors.black),
+                              ),
+                              const Spacer(),
+                              const Padding(
+                                padding: EdgeInsets.only(right: 8.0),
+                                child: Text(
+                                  'RM',
+                                  style: TextStyle(
+                                      fontFamily: 'Roboto',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                      color: Colors.black),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            width: screenSize.width * 0.9,
+                            height: screenSize.height / 3.02,
+                            child: Scrollbar(
+                              thickness: 10,
+                              isAlwaysShown: true,
+                              controller: _scrollController,
+                              child: ListView.builder(
+                                  itemCount: widget.order.length,
+                                  itemBuilder: (context, index) {
+                                    Map<String, dynamic> data =
+                                        <String, dynamic>{};
+
+                                    for (dynamic type in widget.order.keys) {
+                                      data[type.toString()] =
+                                          widget.order[type];
+                                    }
+
+                                    List<dynamic> l =
+                                        data[index.toString()]['toppingName'];
+                                    print('index' +
+                                        index.toString() +
+                                        '------' +
+                                        l.toString());
+                                    return Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Column(
+                                          children: [
+                                            SizedBox(
+                                                width: screenSize.width / 2,
+                                                child: Text(
+                                                  '${index + 1}~' +
+                                                      data[index.toString()]
+                                                          ['name'],
+                                                  style: const TextStyle(
+                                                      fontFamily: 'Roboto',
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 15,
+                                                      color: Colors.black),
+                                                )),
+                                            SizedBox(
+                                              width: screenSize.width / 3,
+                                              child: ListView.builder(
+                                                  shrinkWrap: true,
+                                                  itemCount: l.length,
+                                                  itemBuilder:
+                                                      (context, indexx) {
+                                                    return SizedBox(
+                                                      width:
+                                                          screenSize.width / 2,
+                                                      child: Text(
+                                                        data[index.toString()][
+                                                                        'toppingName']
+                                                                    [indexx]
+                                                                .toString() +
+                                                            '(${data[index.toString()]['toppingPrice'][indexx].toString()})',
+                                                        textAlign:
+                                                            TextAlign.start,
+                                                        style: const TextStyle(
+                                                            fontStyle: FontStyle
+                                                                .italic,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 14,
+                                                            color:
+                                                                Colors.black),
+                                                      ),
+                                                    );
+                                                  }),
+                                            ),
+                                          ],
+                                        ),
+                                        Text(
+                                          data[index.toString()]['quantity']
+                                              .toString(),
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15,
+                                              color: Colors.black),
+                                        ),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 8.0),
+                                          child: Text(
+                                            data[index.toString()]['totalPrice']
+                                                .toString(),
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15,
+                                                color: Colors.black),
+                                          ),
+                                        )
+                                      ],
+                                    );
+                                  }),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  Center(
-                    child: Text(
-                      widget.receiptId.toString(),
-                      style: const TextStyle(
-                          fontFamily: 'Roboto',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 70,
-                          color: Colors.white),
+                    LoadingAnimationWidget.newtonCradle(
+                        color: Colors.white, size: 90),
+                    Center(
+                      child: Text(
+                        'Jumlah RM${widget.totalPrice} ',
+                        style: const TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 45,
+                            color: Colors.blue),
+                      ),
                     ),
-                  ),
-                  const Center(
-                    child: Text(
-                      'Pada Cashier',
-                      style: TextStyle(
-                          fontFamily: 'Roboto',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 25,
-                          color: Colors.white),
+                    const Center(
+                      child: Text(
+                        'Sila Bayar Di Kaunter',
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25,
+                            color: Colors.white),
+                      ),
                     ),
-                  ),
-                  const Center(
-                    child: Text(
-                      'Untuk Selsaikan Order',
-                      style: TextStyle(
-                          fontFamily: 'Roboto',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 25,
-                          color: Colors.white),
+                    const Center(
+                      child: Text(
+                        'Tunjukkan Nombor Ini',
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25,
+                            color: Colors.white),
+                      ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 50,
-                  ),
-                  const Center(
-                    child: Text(
-                      'Jumlah Yang Perlu DiBayar',
-                      style: TextStyle(
-                          fontFamily: 'Roboto',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 25,
-                          color: Colors.white),
+                    Center(
+                      child: Text(
+                        '#' + widget.receiptId.toString(),
+                        style: const TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 70,
+                            color: Colors.white),
+                      ),
                     ),
-                  ),
-                  Center(
-                    child: Text(
-                      'RM${widget.totalPrice}',
-                      style: const TextStyle(
-                          fontFamily: 'Roboto',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 55,
-                          color: Colors.white),
+                    const Center(
+                      child: Text(
+                        'Pada Cashier',
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25,
+                            color: Colors.white),
+                      ),
                     ),
-                  ),
-                  !_loading
-                      ? RoundedButton(
-                          title: 'Cancel Transaction ',
-                          colour: const Color.fromRGBO(244, 67, 54, 1),
-                          onPressed: () async {
-                            await firebaseFirestore
-                                .collection('newOrder')
-                                .where('userEmail',
-                                    isEqualTo: AuthController()
-                                        .auth
-                                        .currentUser
-                                        ?.email
-                                        .toString())
-                                .where('ticketId', isEqualTo: recId)
-                                .get()
-                                .then((value) {
-                              for (var element in value.docs) {
-                                firebaseFirestore
-                                    .collection('newOrder')
-                                    .doc(element.id)
-                                    .delete()
-                                    .then((value) {
-                                  Get.snackbar('Order Failed',
-                                      'You have failed to make the Payment');
-                                  Get.to(const CartScreen());
-                                });
-                              }
-                            });
-                          })
-                      : LoadingAnimationWidget.newtonCradle(
-                          color: Colors.white, size: 90),
-                ],
+                    const Center(
+                      child: Text(
+                        'Untuk Selsaikan Order',
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25,
+                            color: Colors.white),
+                      ),
+                    ),
+                    const Center(
+                      child: Text(
+                        'Tidak perlu beratur terus pergi ke kaunter dan selsaikan pembayaran',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25,
+                            color: Colors.white),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 50,
+                    ),
+                    !_loading
+                        ? RoundedButton(
+                            title: 'Cancel Transaction ',
+                            colour: const Color.fromRGBO(244, 67, 54, 1),
+                            onPressed: () async {
+                              await firebaseFirestore
+                                  .collection('newOrder')
+                                  .where('userEmail',
+                                      isEqualTo: AuthController()
+                                          .auth
+                                          .currentUser
+                                          ?.email
+                                          .toString())
+                                  .where('ticketId', isEqualTo: recId)
+                                  .get()
+                                  .then((value) {
+                                for (var element in value.docs) {
+                                  firebaseFirestore
+                                      .collection('newOrder')
+                                      .doc(element.id)
+                                      .delete()
+                                      .then((value) {
+                                    Get.snackbar('Order Failed',
+                                        'You have failed to make the Payment');
+                                    Get.to(const CartScreen());
+                                  });
+                                }
+                              });
+                            })
+                        : LoadingAnimationWidget.newtonCradle(
+                            color: Colors.white, size: 90),
+                  ],
+                ),
               ),
             ),
       const SizedBox(

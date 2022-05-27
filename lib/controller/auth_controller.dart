@@ -74,7 +74,9 @@ class AuthController extends GetxController {
     else {
       FirestoreController.instance.getUserNickname(
           AuthController.instance.auth.currentUser!.email.toString());
-      //
+      // Get.offAll(() => const ReceiptScreen(
+      //       receiptUniqueId: '1drZNvsI0UAchOZBNGDm',
+      //     ));
       Get.offAll(() => const MenuScreen());
     }
   }
@@ -128,10 +130,7 @@ class AuthController extends GetxController {
     }
   }
 
-  void login(
-    String email,
-    password,
-  ) async {
+  void login(String email, password, bool isEnglish) async {
     try {
       await auth.signInWithEmailAndPassword(email: email, password: password);
     } catch (e) {
@@ -139,13 +138,15 @@ class AuthController extends GetxController {
         "About Login",
         "Login message",
         snackPosition: SnackPosition.BOTTOM,
-        titleText: const Text(
-          "Login failed",
-          style: TextStyle(color: Colors.black),
+        titleText: Text(
+          isEnglish ? "Log Masuk Gagal" : "Login failed",
+          style: const TextStyle(color: Colors.black),
         ),
-        messageText: const Text(
-          'Sila pastikan Email atau Password Anda Betul',
-          style: TextStyle(color: Colors.black),
+        messageText: Text(
+          isEnglish
+              ? 'Sila pastikan Email atau Password Anda Betul'
+              : 'Please make sure your email or password is right',
+          style: const TextStyle(color: Colors.black),
         ),
       );
       Get.offAll(const LoginScreen());
