@@ -174,7 +174,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 );
               }
               final isOpen = snapshot.data!;
-    
+
               return isOpen['isOpen']
                   ? Container(child: const MenuStream())
                   : Padding(
@@ -410,7 +410,6 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 }
 
-
 //push notification dialog for foreground
 class DynamicDialog extends StatefulWidget {
   final title;
@@ -488,7 +487,7 @@ class MenuWidget extends StatelessWidget {
               width: screenSize.width / 2,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                    fit: BoxFit.cover, image: AssetImage(imgUrl)),
+                    fit: BoxFit.fill, image: AssetImage(imgUrl)),
                 borderRadius: const BorderRadius.all(Radius.circular(20.0)),
               ),
             ),

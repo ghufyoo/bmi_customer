@@ -14,7 +14,7 @@ final _firestore = FirebaseFirestore.instance;
 final auth = Get.put(AuthController());
 //final User user = auth.auth.currentUser!;
 DateTime now = DateTime.now();
-dynamic currentTime = DateFormat.jm().format(DateTime.now());
+
 dynamic currentDate = DateFormat.yMd().format(DateTime.now());
 String datetime = DateFormat('dd-MM-yyyy – HH:mm').format(now);
 num id = 255;
@@ -78,7 +78,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   Widget build(BuildContext context) {
     final controller = Get.put(AddToCartVM());
     var screenSize = MediaQuery.of(context).size;
-
+    dynamic currentTime = DateFormat.jm().format(DateTime.now());
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.teal[900],
@@ -211,6 +211,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
 
                           FirestoreController.instance.placeOrder(
                               placeOrder, widget.uniqueTicketNumber);
+               
                           Get.to(ReceiptScreen(
                             receiptUniqueId: widget.uniqueTicketNumber,
                           ));
@@ -254,81 +255,6 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                       ),
                     ),
                   )
-                // ? InkWell(
-                //     onTap: () async {
-                //       try {
-                //         controller.toToppingName();
-                //         controller.toToppingPrice();
-
-                //         await _firestore
-                //             .collection('OrderNumber')
-                //             .doc('TicketNumber')
-                //             .update({'id': widget.ticketNumber});
-                //         final placeOrder = Orders(
-                //             userEmail: widget.userEmail,
-                //             userName: widget.userName,
-                //             userPhoneNumber: widget.userPhonenumber,
-                //             timestamp: Timestamp.now(),
-                //             currentTime: currentTime,
-                //             currentDate: currentDate,
-                //             receiptId: widget.ticketNumber,
-                //             receiptUniqueId: widget.uniqueTicketNumber,
-                //             buzzerNumber: 1,
-                //             totalDrinks: controller.tryTotalDrinks(),
-                //             totalFoods: controller.tryTotalMamu(),
-                //             totalPrice: controller.tryTotal(),
-                //             menuTopping: controller.toTopping(
-                //                 controller.toToppingName(),
-                //                 controller.toToppingPrice()),
-                //             menuToppingName: controller.toToppingName(),
-                //             menuToppingPrice: controller.toToppingPrice(),
-                //             menuName: controller.toName(),
-                //             menuPrice: controller.toPrice(),
-                //             menuQuantity: controller.toQuantity(),
-                //             iceLevel: controller.toiceLevel(),
-                //             sugarLevel: controller.tosugarLevel(),
-                //             spicyLevel: controller.tospicyLevel(),
-                //             isDone: false,
-                //             isPickup: false,
-                //             isPaid: false,
-                //             isDrink: controller.toisDrink());
-
-                //         FirestoreController.instance
-                //             .placeOrder(placeOrder, widget.uniqueTicketNumber);
-                //         Get.to(ReceiptScreen(
-                //           receiptId: widget.uniqueTicketNumber,
-                //         ));
-                //         print(controller.toTopping(controller.toToppingName(),
-                //             controller.toToppingPrice()));
-                //       } catch (e) {
-                //         Get.snackbar('$e', 'message');
-                //         print('error $e');
-                //       }
-
-                //     },
-                //     child: Container(
-                //       width: screenSize.width / 1.5,
-                //       height: screenSize.height / 1.7,
-                //       child: const Center(child: Text('')),
-                //       decoration: BoxDecoration(
-                //         color: Colors.teal,
-                //         boxShadow: [
-                //           BoxShadow(
-                //             color: Colors.grey.withOpacity(0.5),
-                //             spreadRadius: 3,
-                //             blurRadius: 7,
-                //             offset: const Offset(
-                //                 0, 3), // changes position of shadow
-                //           ),
-                //         ],
-                //         image: const DecorationImage(
-                //             image: AssetImage('images/BayarDiKaunter.png'),
-                //             fit: BoxFit.cover),
-                //         borderRadius:
-                //             const BorderRadius.all(Radius.circular(20.0)),
-                //       ),
-                //     ),
-                //   )
                 : LoadingAnimationWidget.newtonCradle(
                     color: Colors.white, size: 90),
           ],

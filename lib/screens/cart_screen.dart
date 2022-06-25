@@ -4,7 +4,6 @@ import 'package:bmi_order/model/menu_model.dart';
 import 'package:bmi_order/screens/menu_screen.dart';
 import 'package:bmi_order/screens/paymentmethod_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:web_browser_detect/web_browser_detect.dart';
@@ -451,7 +450,7 @@ class _CartScreenState extends State<CartScreen> {
                                 ],
                               )
                             : const Center(
-                                child: Text('Order Dulu'),
+                                child: Text('Order First'),
                               ),
                       ),
                     ),
@@ -470,7 +469,7 @@ class _CartScreenState extends State<CartScreen> {
             child: FloatingActionButton.extended(
               backgroundColor: Colors.white,
               label: Text(
-                'BAYAR RM$overallPrice',
+                'PAY RM$overallPrice',
                 style: const TextStyle(
                     fontFamily: 'Roboto',
                     fontWeight: FontWeight.bold,
@@ -483,26 +482,26 @@ class _CartScreenState extends State<CartScreen> {
               ),
               onPressed: () async {
                 if (controller.lst.isNotEmpty) {
-                  print(browser!.browserAgent);
-                  if (browser.browserAgent.toString() ==
-                      'BrowserAgent.Chrome') {
-                    Get.defaultDialog(
-                        title:
-                            'Please Allow Notification To Get Notification When Food is ready ',
-                        middleText: 'IOS Not Supported');
-                    FirebaseMessaging messaging = FirebaseMessaging.instance;
+                  // print(browser!.browserAgent);
+                  // if (browser.browserAgent.toString() ==
+                  //     'BrowserAgent.Chrome') {
+                  //   Get.defaultDialog(
+                  //       title:
+                  //           'Please Allow Notification To Get Notification When Food is ready ',
+                  //       middleText: 'IOS Not Supported');
+                  //   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-                    NotificationSettings settings =
-                        await messaging.requestPermission(
-                      alert: true,
-                      announcement: false,
-                      badge: true,
-                      carPlay: false,
-                      criticalAlert: false,
-                      provisional: false,
-                      sound: true,
-                    );
-                  }
+                  //   NotificationSettings settings =
+                  //       await messaging.requestPermission(
+                  //     alert: true,
+                  //     announcement: false,
+                  //     badge: true,
+                  //     carPlay: false,
+                  //     criticalAlert: false,
+                  //     provisional: false,
+                  //     sound: true,
+                  //   );
+                  // }
 
                   await Future.delayed(const Duration(milliseconds: 300));
                   String fid = FirebaseFirestore.instance

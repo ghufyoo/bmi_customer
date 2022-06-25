@@ -3,6 +3,7 @@
 import 'package:bmi_order/components/constants.dart';
 import 'package:bmi_order/screens/menu_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:custom_clippers/custom_clippers.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import '../controller/cart_controller.dart';
@@ -142,7 +143,7 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
                 width: screenSize.width,
                 child: const Center(
                   child: Text(
-                    'Nak Berapo ?',
+                    'Quantity ?',
                     style: kMenuOptionDetailStyle,
                   ),
                 ),
@@ -287,14 +288,14 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(2.0),
                   child: Container(
-                      height: screenSize.height * 0.05,
+                      height: screenSize.height * 0.09,
                       width: screenSize.width,
                       decoration: kContainerHeaderStyle,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Text(
-                            "TAMBAH ",
+                            "ADD ",
                             style: TextStyle(
                               color: Colors.teal,
                               fontWeight: FontWeight.bold,
@@ -347,11 +348,6 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
                 child: LoadingAnimationWidget.newtonCradle(
                     color: Colors.white, size: 85),
               );
-            } else if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: LoadingAnimationWidget.newtonCradle(
-                    color: Colors.white, size: 85),
-              );
             }
             final docs = snapshot.data!.docs;
             return ListView.builder(
@@ -391,33 +387,34 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
 
                           setState(() {
                             name[i] = value!;
+
+                            if (cart.containsKey('Tak Nak Isi Cendol') &&
+                                cart.containsKey('Extra Isi Cendol')) {
+                              Get.snackbar('Masalah Pemilihan',
+                                  'Sila Perbetulkan Pilihan topping Anda');
+                              Get.to(const MenuScreen());
+                            } else if (cart.containsKey('Tak Nak Kacang') &&
+                                cart.containsKey('Extra Kacang')) {
+                              Get.snackbar('Masalah Pemilihan',
+                                  'Sila Perbetulkan Pilihan topping Anda');
+                              Get.to(const MenuScreen());
+                            } else if (cart.containsKey('Tak Nak Jagung') &&
+                                cart.containsKey('Extra Jagung')) {
+                              Get.snackbar('Masalah Pemilihan',
+                                  'Sila Perbetulkan Pilihan topping Anda');
+                              Get.to(const MenuScreen());
+                            } else if (cart.containsKey('Tak Nak Jelly') &&
+                                cart.containsKey('Extra Jelly')) {
+                              Get.snackbar('Masalah Pemilihan',
+                                  'Sila Perbetulkan Pilihan topping Anda');
+                              Get.to(const MenuScreen());
+                            } else if (cart.containsKey('Tak Nak Cincau') &&
+                                cart.containsKey('Extra Cincau')) {
+                              Get.snackbar('Masalah Pemilihan',
+                                  'Sila Perbetulkan Pilihan topping Anda');
+                              Get.to(const MenuScreen());
+                            }
                             if (name[i] == false) {
-                              if (cart.containsKey('Tak Nak Isi Cendol') &&
-                                  cart.containsKey('Extra Isi Cendol')) {
-                                Get.snackbar('Masalah Pemilihan',
-                                    'Sila Perbetulkan Pilihan topping Anda');
-                                Get.to(const MenuScreen());
-                              } else if (cart.containsKey('Tak Nak Kacang') &&
-                                  cart.containsKey('Extra Kacang')) {
-                                Get.snackbar('Masalah Pemilihan',
-                                    'Sila Perbetulkan Pilihan topping Anda');
-                                Get.to(const MenuScreen());
-                              } else if (cart.containsKey('Tak Nak Jagung') &&
-                                  cart.containsKey('Extra Jagung')) {
-                                Get.snackbar('Masalah Pemilihan',
-                                    'Sila Perbetulkan Pilihan topping Anda');
-                                Get.to(const MenuScreen());
-                              } else if (cart.containsKey('Tak Nak Jelly') &&
-                                  cart.containsKey('Extra Jelly')) {
-                                Get.snackbar('Masalah Pemilihan',
-                                    'Sila Perbetulkan Pilihan topping Anda');
-                                Get.to(const MenuScreen());
-                              } else if (cart.containsKey('Tak Nak Cincau') &&
-                                  cart.containsKey('Extra Cincau')) {
-                                Get.snackbar('Masalah Pemilihan',
-                                    'Sila Perbetulkan Pilihan topping Anda');
-                                Get.to(const MenuScreen());
-                              }
                               cart.removeWhere(
                                   (key, value) => key == data['name']);
 
@@ -444,11 +441,6 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
                 child: LoadingAnimationWidget.newtonCradle(
                     color: Colors.white, size: 85),
               );
-            } else if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: LoadingAnimationWidget.newtonCradle(
-                    color: Colors.white, size: 85),
-              );
             }
             final docs = snapshot.data!.docs;
             return ListView.builder(
@@ -488,33 +480,34 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
 
                           setState(() {
                             name[i] = value!;
+
+                            if (cart.containsKey('Tak Nak Isi Cendol') &&
+                                cart.containsKey('Extra Isi Cendol')) {
+                              Get.snackbar('Masalah Pemilihan',
+                                  'Sila Perbetulkan Pilihan topping Anda');
+                              Get.to(const MenuScreen());
+                            } else if (cart.containsKey('Tak Nak Kacang') &&
+                                cart.containsKey('Extra Kacang')) {
+                              Get.snackbar('Masalah Pemilihan',
+                                  'Sila Perbetulkan Pilihan topping Anda');
+                              Get.to(const MenuScreen());
+                            } else if (cart.containsKey('Tak Nak Jagung') &&
+                                cart.containsKey('Extra Jagung')) {
+                              Get.snackbar('Masalah Pemilihan',
+                                  'Sila Perbetulkan Pilihan topping Anda');
+                              Get.to(const MenuScreen());
+                            } else if (cart.containsKey('Tak Nak Jelly') &&
+                                cart.containsKey('Extra Jelly')) {
+                              Get.snackbar('Masalah Pemilihan',
+                                  'Sila Perbetulkan Pilihan topping Anda');
+                              Get.to(const MenuScreen());
+                            } else if (cart.containsKey('Tak Nak Cincau') &&
+                                cart.containsKey('Extra Cincau')) {
+                              Get.snackbar('Masalah Pemilihan',
+                                  'Sila Perbetulkan Pilihan topping Anda');
+                              Get.to(const MenuScreen());
+                            }
                             if (name[i] == false) {
-                              if (cart.containsKey('Tak Nak Isi Cendol') &&
-                                  cart.containsKey('Extra Isi Cendol')) {
-                                Get.snackbar('Masalah Pemilihan',
-                                    'Sila Perbetulkan Pilihan topping Anda');
-                                Get.to(const MenuScreen());
-                              } else if (cart.containsKey('Tak Nak Kacang') &&
-                                  cart.containsKey('Extra Kacang')) {
-                                Get.snackbar('Masalah Pemilihan',
-                                    'Sila Perbetulkan Pilihan topping Anda');
-                                Get.to(const MenuScreen());
-                              } else if (cart.containsKey('Tak Nak Jagung') &&
-                                  cart.containsKey('Extra Jagung')) {
-                                Get.snackbar('Masalah Pemilihan',
-                                    'Sila Perbetulkan Pilihan topping Anda');
-                                Get.to(const MenuScreen());
-                              } else if (cart.containsKey('Tak Nak Jelly') &&
-                                  cart.containsKey('Extra Jelly')) {
-                                Get.snackbar('Masalah Pemilihan',
-                                    'Sila Perbetulkan Pilihan topping Anda');
-                                Get.to(const MenuScreen());
-                              } else if (cart.containsKey('Tak Nak Cincau') &&
-                                  cart.containsKey('Extra Cincau')) {
-                                Get.snackbar('Masalah Pemilihan',
-                                    'Sila Perbetulkan Pilihan topping Anda');
-                                Get.to(const MenuScreen());
-                              }
                               cart.removeWhere(
                                   (key, value) => key == data['name']);
 
@@ -532,7 +525,7 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
 
   double _currentSugarSliderValue = 50;
   double _currentIceSliderValue = 50;
-  double _currentSpicySliderValue = 50;
+  final double _currentSpicySliderValue = 50;
   num icePrice = 0;
   String sliderIce(double value, String size) {
     if (size == 'Small') {
@@ -643,13 +636,17 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Container(
-          height: 200,
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-                fit: BoxFit.cover, image: AssetImage(widget.imgUrl)),
-            borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+        ClipPath(
+          clipper: SinCosineWaveClipper(
+              horizontalPosition: HorizontalPosition.RIGHT),
+          child: Container(
+            height: 200,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  fit: BoxFit.cover, image: AssetImage(widget.imgUrl)),
+              borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+            ),
           ),
         ),
         Row(
@@ -1004,13 +1001,17 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
-          height: 200,
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-                fit: BoxFit.cover, image: AssetImage(widget.imgUrl)),
-            borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+        ClipPath(
+          clipper: SinCosineWaveClipper(
+              horizontalPosition: HorizontalPosition.RIGHT),
+          child: Container(
+            height: 200,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  fit: BoxFit.cover, image: AssetImage(widget.imgUrl)),
+              borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+            ),
           ),
         ),
         Row(
@@ -1356,13 +1357,17 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
-          height: 200,
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-                fit: BoxFit.cover, image: AssetImage(widget.imgUrl)),
-            borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+        ClipPath(
+          clipper: SinCosineWaveClipper(
+              horizontalPosition: HorizontalPosition.RIGHT),
+          child: Container(
+            height: 200,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  fit: BoxFit.cover, image: AssetImage(widget.imgUrl)),
+              borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+            ),
           ),
         ),
         Row(
@@ -1556,13 +1561,17 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
-          height: 200,
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-                fit: BoxFit.cover, image: AssetImage(widget.imgUrl)),
-            borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+        ClipPath(
+          clipper: SinCosineWaveClipper(
+              horizontalPosition: HorizontalPosition.RIGHT),
+          child: Container(
+            height: 200,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  fit: BoxFit.cover, image: AssetImage(widget.imgUrl)),
+              borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+            ),
           ),
         ),
         Row(
@@ -1745,13 +1754,17 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
-          height: 200,
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-                fit: BoxFit.cover, image: AssetImage(widget.imgUrl)),
-            borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+        ClipPath(
+          clipper: SinCosineWaveClipper(
+              horizontalPosition: HorizontalPosition.RIGHT),
+          child: Container(
+            height: 200,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  fit: BoxFit.cover, image: AssetImage(widget.imgUrl)),
+              borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+            ),
           ),
         ),
         Row(
@@ -1839,74 +1852,6 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
             child: streamBuildCheckCendol(isBucket),
           ),
         ),
-        Column(
-          children: [
-            Container(
-              child: const Center(
-                child: Text(
-                  'Level Pedas',
-                  style: kMenuOptionDetailStyle,
-                ),
-              ),
-              decoration: kContainerHeaderStyle,
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text(
-                  'Tak Nak Pedas',
-                  style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Colors.white),
-                ),
-                Text(
-                  'Kurang Pedas',
-                  style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Colors.white),
-                ),
-                Text(
-                  'Normal',
-                  style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Colors.white),
-                ),
-                Text(
-                  'Extra Pedas',
-                  style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Colors.white),
-                ),
-              ],
-            ),
-            Slider(
-              autofocus: true,
-              activeColor: Colors.redAccent,
-              inactiveColor: Colors.teal[700],
-              thumbColor: Colors.white,
-              value: _currentSpicySliderValue,
-              max: 75,
-              divisions: 3,
-              label: sliderSpicy(_currentSpicySliderValue),
-              onChanged: (double value) {
-                setState(() {
-                  _currentSpicySliderValue = value;
-                });
-              },
-            ),
-          ],
-        ),
       ],
     );
   }
@@ -1916,13 +1861,17 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
-          height: 200,
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-                fit: BoxFit.cover, image: AssetImage(widget.imgUrl)),
-            borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+        ClipPath(
+          clipper: SinCosineWaveClipper(
+              horizontalPosition: HorizontalPosition.RIGHT),
+          child: Container(
+            height: 200,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  fit: BoxFit.cover, image: AssetImage(widget.imgUrl)),
+              borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+            ),
           ),
         ),
         Row(
@@ -2019,13 +1968,17 @@ class _DetailedmenuScreenState extends State<DetailedmenuScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
-          height: 200,
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-                fit: BoxFit.cover, image: AssetImage(widget.imgUrl)),
-            borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+        ClipPath(
+          clipper: SinCosineWaveClipper(
+              horizontalPosition: HorizontalPosition.RIGHT),
+          child: Container(
+            height: 200,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  fit: BoxFit.cover, image: AssetImage(widget.imgUrl)),
+              borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+            ),
           ),
         ),
         Row(

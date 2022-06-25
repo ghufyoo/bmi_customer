@@ -55,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               const Text("Made With   "),
               Image.asset(
-                "images/EasyOrder.png",
+                "images/GLIPPY.png",
                 width: 70,
                 height: 70,
               ),

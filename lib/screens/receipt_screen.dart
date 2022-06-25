@@ -27,6 +27,14 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
   @override
   void initState() {
     // TODO: implement initState
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      Get.defaultDialog(
+          title: 'Tidak Perlu Beratur\nNo Need To Que',
+          titleStyle: const TextStyle(fontSize: 25),
+          middleText: 'Terus Pergi Ke Kaunter\nGo Straight To The Counter');
+      print("WidgetsBinding");
+    });
+
     _scrollController = ScrollController();
     super.initState();
   }

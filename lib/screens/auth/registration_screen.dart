@@ -37,7 +37,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             children: [
               const Text("Made With   "),
               Image.asset(
-                "images/EasyOrder.png",
+                "images/GLIPPY.png",
                 width: 70,
                 height: 70,
               ),
