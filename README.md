@@ -1,16 +1,15 @@
 # Cendol BMI Order app
 
-A new Flutter project.
+The Customer Web Application Ordering web site built using flutter
 
-## Getting Started
-![This is an image](/images/BMIORDER_portfolio.svg)
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+![](/images/BMIORDER_portfolio.svg)
+![](/images/2.svg)
+![](/images/3.svg)
+![](/images/4.svg)
+![](/images/5.svg)
+![](/images/6.svg)
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+#The Kicthen App
+- [Check Out the Kitchen app](https://github.com/ghufyoo/bmi_kitchen)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
